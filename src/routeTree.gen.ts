@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TributesRouteImport } from './routes/tributes'
 import { Route as ScholarshipRouteImport } from './routes/scholarship'
 import { Route as LegacyRouteImport } from './routes/legacy'
 import { Route as AskRouteImport } from './routes/ask'
@@ -22,6 +23,11 @@ import { Route as ApiSitemapDotxmlRouteImport } from './routes/api/sitemap[.]xml
 import { Route as ApiRobotsDottxtRouteImport } from './routes/api/robots[.]txt'
 import { Route as ApiPublicAskRouteImport } from './routes/api/public/ask'
 
+const TributesRoute = TributesRouteImport.update({
+  id: '/tributes',
+  path: '/tributes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ScholarshipRoute = ScholarshipRouteImport.update({
   id: '/scholarship',
   path: '/scholarship',
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
+  '/tributes': typeof TributesRoute
   '/api/robots.txt': typeof ApiRobotsDottxtRoute
   '/api/sitemap.xml': typeof ApiSitemapDotxmlRoute
   '/themes/$slug': typeof ThemesSlugRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
+  '/tributes': typeof TributesRoute
   '/api/robots.txt': typeof ApiRobotsDottxtRoute
   '/api/sitemap.xml': typeof ApiSitemapDotxmlRoute
   '/themes/$slug': typeof ThemesSlugRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
+  '/tributes': typeof TributesRoute
   '/api/robots.txt': typeof ApiRobotsDottxtRoute
   '/api/sitemap.xml': typeof ApiSitemapDotxmlRoute
   '/themes/$slug': typeof ThemesSlugRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/ask'
     | '/legacy'
     | '/scholarship'
+    | '/tributes'
     | '/api/robots.txt'
     | '/api/sitemap.xml'
     | '/themes/$slug'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/ask'
     | '/legacy'
     | '/scholarship'
+    | '/tributes'
     | '/api/robots.txt'
     | '/api/sitemap.xml'
     | '/themes/$slug'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/ask'
     | '/legacy'
     | '/scholarship'
+    | '/tributes'
     | '/api/robots.txt'
     | '/api/sitemap.xml'
     | '/themes/$slug'
@@ -177,6 +189,7 @@ export interface RootRouteChildren {
   AskRoute: typeof AskRoute
   LegacyRoute: typeof LegacyRoute
   ScholarshipRoute: typeof ScholarshipRoute
+  TributesRoute: typeof TributesRoute
   ApiRobotsDottxtRoute: typeof ApiRobotsDottxtRoute
   ApiSitemapDotxmlRoute: typeof ApiSitemapDotxmlRoute
   ThemesSlugRoute: typeof ThemesSlugRoute
@@ -188,6 +201,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tributes': {
+      id: '/tributes'
+      path: '/tributes'
+      fullPath: '/tributes'
+      preLoaderRoute: typeof TributesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/scholarship': {
       id: '/scholarship'
       path: '/scholarship'
@@ -281,6 +301,7 @@ const rootRouteChildren: RootRouteChildren = {
   AskRoute: AskRoute,
   LegacyRoute: LegacyRoute,
   ScholarshipRoute: ScholarshipRoute,
+  TributesRoute: TributesRoute,
   ApiRobotsDottxtRoute: ApiRobotsDottxtRoute,
   ApiSitemapDotxmlRoute: ApiSitemapDotxmlRoute,
   ThemesSlugRoute: ThemesSlugRoute,
@@ -292,3 +313,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
