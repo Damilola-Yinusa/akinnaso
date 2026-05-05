@@ -65,6 +65,8 @@ export const Route = createRootRoute({
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/png", href: "/favicon.png" },
+      { rel: "apple-touch-icon", href: "/favicon.png" },
       { rel: "sitemap", type: "application/xml", href: "/api/sitemap.xml" },
       { rel: "canonical", href: typeof window !== "undefined" ? window.location.origin + window.location.pathname : "" },
     ],
