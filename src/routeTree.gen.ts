@@ -11,10 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ScholarshipRouteImport } from './routes/scholarship'
 import { Route as LegacyRouteImport } from './routes/legacy'
+import { Route as AskRouteImport } from './routes/ask'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WritingsIndexRouteImport } from './routes/writings.index'
 import { Route as WritingsSlugRouteImport } from './routes/writings.$slug'
+import { Route as ApiPublicAskRouteImport } from './routes/api/public/ask'
 
 const ScholarshipRoute = ScholarshipRouteImport.update({
   id: '/scholarship',
@@ -24,6 +26,11 @@ const ScholarshipRoute = ScholarshipRouteImport.update({
 const LegacyRoute = LegacyRouteImport.update({
   id: '/legacy',
   path: '/legacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AskRoute = AskRouteImport.update({
+  id: '/ask',
+  path: '/ask',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -46,66 +53,85 @@ const WritingsSlugRoute = WritingsSlugRouteImport.update({
   path: '/writings/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAskRoute = ApiPublicAskRouteImport.update({
+  id: '/api/public/ask',
+  path: '/api/public/ask',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
   '/writings/$slug': typeof WritingsSlugRoute
   '/writings/': typeof WritingsIndexRoute
+  '/api/public/ask': typeof ApiPublicAskRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
   '/writings/$slug': typeof WritingsSlugRoute
   '/writings': typeof WritingsIndexRoute
+  '/api/public/ask': typeof ApiPublicAskRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
   '/writings/$slug': typeof WritingsSlugRoute
   '/writings/': typeof WritingsIndexRoute
+  '/api/public/ask': typeof ApiPublicAskRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/ask'
     | '/legacy'
     | '/scholarship'
     | '/writings/$slug'
     | '/writings/'
+    | '/api/public/ask'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/ask'
     | '/legacy'
     | '/scholarship'
     | '/writings/$slug'
     | '/writings'
+    | '/api/public/ask'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/ask'
     | '/legacy'
     | '/scholarship'
     | '/writings/$slug'
     | '/writings/'
+    | '/api/public/ask'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AskRoute: typeof AskRoute
   LegacyRoute: typeof LegacyRoute
   ScholarshipRoute: typeof ScholarshipRoute
   WritingsSlugRoute: typeof WritingsSlugRoute
   WritingsIndexRoute: typeof WritingsIndexRoute
+  ApiPublicAskRoute: typeof ApiPublicAskRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -122,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/legacy'
       fullPath: '/legacy'
       preLoaderRoute: typeof LegacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ask': {
+      id: '/ask'
+      path: '/ask'
+      fullPath: '/ask'
+      preLoaderRoute: typeof AskRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -152,16 +185,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WritingsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/ask': {
+      id: '/api/public/ask'
+      path: '/api/public/ask'
+      fullPath: '/api/public/ask'
+      preLoaderRoute: typeof ApiPublicAskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AskRoute: AskRoute,
   LegacyRoute: LegacyRoute,
   ScholarshipRoute: ScholarshipRoute,
   WritingsSlugRoute: WritingsSlugRoute,
   WritingsIndexRoute: WritingsIndexRoute,
+  ApiPublicAskRoute: ApiPublicAskRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

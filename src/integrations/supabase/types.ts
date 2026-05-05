@@ -24,6 +24,7 @@ export type Database = {
           id: string
           published_at: string | null
           scraped_at: string
+          search_vector: unknown
           slug: string
           source: string
           source_url: string
@@ -41,6 +42,7 @@ export type Database = {
           id?: string
           published_at?: string | null
           scraped_at?: string
+          search_vector?: unknown
           slug: string
           source?: string
           source_url: string
@@ -58,6 +60,7 @@ export type Database = {
           id?: string
           published_at?: string | null
           scraped_at?: string
+          search_vector?: unknown
           slug?: string
           source?: string
           source_url?: string
@@ -73,7 +76,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      search_articles: {
+        Args: { max_results?: number; q: string }
+        Returns: {
+          id: string
+          published_at: string
+          rank: number
+          slug: string
+          snippet: string
+          source: string
+          source_url: string
+          title: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
