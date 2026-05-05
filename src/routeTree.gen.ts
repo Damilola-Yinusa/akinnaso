@@ -15,7 +15,9 @@ import { Route as AskRouteImport } from './routes/ask'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WritingsIndexRouteImport } from './routes/writings.index'
+import { Route as ThemesIndexRouteImport } from './routes/themes.index'
 import { Route as WritingsSlugRouteImport } from './routes/writings.$slug'
+import { Route as ThemesSlugRouteImport } from './routes/themes.$slug'
 import { Route as ApiPublicAskRouteImport } from './routes/api/public/ask'
 
 const ScholarshipRoute = ScholarshipRouteImport.update({
@@ -48,9 +50,19 @@ const WritingsIndexRoute = WritingsIndexRouteImport.update({
   path: '/writings/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ThemesIndexRoute = ThemesIndexRouteImport.update({
+  id: '/themes/',
+  path: '/themes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WritingsSlugRoute = WritingsSlugRouteImport.update({
   id: '/writings/$slug',
   path: '/writings/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThemesSlugRoute = ThemesSlugRouteImport.update({
+  id: '/themes/$slug',
+  path: '/themes/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicAskRoute = ApiPublicAskRouteImport.update({
@@ -65,7 +77,9 @@ export interface FileRoutesByFullPath {
   '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
+  '/themes/$slug': typeof ThemesSlugRoute
   '/writings/$slug': typeof WritingsSlugRoute
+  '/themes/': typeof ThemesIndexRoute
   '/writings/': typeof WritingsIndexRoute
   '/api/public/ask': typeof ApiPublicAskRoute
 }
@@ -75,7 +89,9 @@ export interface FileRoutesByTo {
   '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
+  '/themes/$slug': typeof ThemesSlugRoute
   '/writings/$slug': typeof WritingsSlugRoute
+  '/themes': typeof ThemesIndexRoute
   '/writings': typeof WritingsIndexRoute
   '/api/public/ask': typeof ApiPublicAskRoute
 }
@@ -86,7 +102,9 @@ export interface FileRoutesById {
   '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
+  '/themes/$slug': typeof ThemesSlugRoute
   '/writings/$slug': typeof WritingsSlugRoute
+  '/themes/': typeof ThemesIndexRoute
   '/writings/': typeof WritingsIndexRoute
   '/api/public/ask': typeof ApiPublicAskRoute
 }
@@ -98,7 +116,9 @@ export interface FileRouteTypes {
     | '/ask'
     | '/legacy'
     | '/scholarship'
+    | '/themes/$slug'
     | '/writings/$slug'
+    | '/themes/'
     | '/writings/'
     | '/api/public/ask'
   fileRoutesByTo: FileRoutesByTo
@@ -108,7 +128,9 @@ export interface FileRouteTypes {
     | '/ask'
     | '/legacy'
     | '/scholarship'
+    | '/themes/$slug'
     | '/writings/$slug'
+    | '/themes'
     | '/writings'
     | '/api/public/ask'
   id:
@@ -118,7 +140,9 @@ export interface FileRouteTypes {
     | '/ask'
     | '/legacy'
     | '/scholarship'
+    | '/themes/$slug'
     | '/writings/$slug'
+    | '/themes/'
     | '/writings/'
     | '/api/public/ask'
   fileRoutesById: FileRoutesById
@@ -129,7 +153,9 @@ export interface RootRouteChildren {
   AskRoute: typeof AskRoute
   LegacyRoute: typeof LegacyRoute
   ScholarshipRoute: typeof ScholarshipRoute
+  ThemesSlugRoute: typeof ThemesSlugRoute
   WritingsSlugRoute: typeof WritingsSlugRoute
+  ThemesIndexRoute: typeof ThemesIndexRoute
   WritingsIndexRoute: typeof WritingsIndexRoute
   ApiPublicAskRoute: typeof ApiPublicAskRoute
 }
@@ -178,11 +204,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WritingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/themes/': {
+      id: '/themes/'
+      path: '/themes'
+      fullPath: '/themes/'
+      preLoaderRoute: typeof ThemesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/writings/$slug': {
       id: '/writings/$slug'
       path: '/writings/$slug'
       fullPath: '/writings/$slug'
       preLoaderRoute: typeof WritingsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/themes/$slug': {
+      id: '/themes/$slug'
+      path: '/themes/$slug'
+      fullPath: '/themes/$slug'
+      preLoaderRoute: typeof ThemesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/ask': {
@@ -201,7 +241,9 @@ const rootRouteChildren: RootRouteChildren = {
   AskRoute: AskRoute,
   LegacyRoute: LegacyRoute,
   ScholarshipRoute: ScholarshipRoute,
+  ThemesSlugRoute: ThemesSlugRoute,
   WritingsSlugRoute: WritingsSlugRoute,
+  ThemesIndexRoute: ThemesIndexRoute,
   WritingsIndexRoute: WritingsIndexRoute,
   ApiPublicAskRoute: ApiPublicAskRoute,
 }

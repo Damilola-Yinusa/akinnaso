@@ -5,6 +5,7 @@ export function SiteHeader() {
     { to: "/", label: "Home" },
     { to: "/about", label: "About" },
     { to: "/scholarship", label: "Scholarship" },
+    { to: "/themes", label: "Themes" },
     { to: "/writings", label: "Writings" },
     { to: "/ask", label: "Ask AI" },
     { to: "/legacy", label: "Legacy" },

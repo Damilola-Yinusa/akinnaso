@@ -29,6 +29,8 @@ export type Database = {
           source: string
           source_url: string
           tags: string[] | null
+          theme: string | null
+          theme_confidence: number | null
           title: string
           updated_at: string
           word_count: number | null
@@ -47,6 +49,8 @@ export type Database = {
           source?: string
           source_url: string
           tags?: string[] | null
+          theme?: string | null
+          theme_confidence?: number | null
           title: string
           updated_at?: string
           word_count?: number | null
@@ -65,9 +69,44 @@ export type Database = {
           source?: string
           source_url?: string
           tags?: string[] | null
+          theme?: string | null
+          theme_confidence?: number | null
           title?: string
           updated_at?: string
           word_count?: number | null
+        }
+        Relationships: []
+      }
+      themes: {
+        Row: {
+          blurb: string
+          created_at: string
+          id: string
+          narrative: string
+          slug: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          blurb: string
+          created_at?: string
+          id?: string
+          narrative: string
+          slug: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          blurb?: string
+          created_at?: string
+          id?: string
+          narrative?: string
+          slug?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
