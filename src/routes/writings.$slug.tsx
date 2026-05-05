@@ -62,8 +62,30 @@ function ArticlePage() {
 
   if (!article) throw notFound();
 
-  // Strip the leading "The Nation Newspaper" preamble that Firecrawl pulls from header
-  const cleaned = (article.content || "").replace(/^.*?The Nation Newspaper[\s\S]*?\n\n/, "").trim();
+  // Extract just the essay body: starts at the H1 title, ends before related/sidebar noise
+  const cleaned = (() => {
+    const raw = article.content || "";
+    // Find the H1 title heading (Firecrawl renders it as `# Title`)
+    const h1Match = raw.match(/^#\s+.+$/m);
+    let body = h1Match ? raw.slice(h1Match.index! + h1Match[0].length) : raw;
+    // Drop everything from the first "related posts" style block onwards.
+    // Patterns: lines of `##### [..]` (related links), or known footer markers.
+    const cutMarkers = [
+      /\n#{2,5}\s+\[/,                        // sidebar/related headings
+      /\n\s*Tags?:\s/i,
+      /\n\s*Share this:/i,
+      /\n\s*Related Posts?/i,
+      /\n\s*Subscribe to our Newsletter/i,
+      /\n\s*Trending/i,
+      /\n\s*Most Read/i,
+    ];
+    let cutAt = body.length;
+    for (const re of cutMarkers) {
+      const m = body.match(re);
+      if (m && m.index !== undefined && m.index < cutAt) cutAt = m.index;
+    }
+    return body.slice(0, cutAt).trim();
+  })();
 
   const date = article.published_at
     ? new Date(article.published_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })

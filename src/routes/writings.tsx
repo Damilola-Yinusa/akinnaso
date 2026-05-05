@@ -28,11 +28,14 @@ type Article = {
   word_count: number | null;
 };
 
+const PAGE_SIZE = 12;
+
 function WritingsPage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [year, setYear] = useState<string>("all");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     supabase
@@ -44,6 +47,8 @@ function WritingsPage() {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => { setPage(1); }, [q, year]);
 
   const years = useMemo(() => {
     const ys = new Set<string>();
@@ -58,6 +63,14 @@ function WritingsPage() {
       return true;
     });
   }, [articles, q, year]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paged = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const goTo = (p: number) => {
+    setPage(p);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -111,9 +124,11 @@ function WritingsPage() {
           <p className="text-center text-muted-foreground">No essays match your search.</p>
         ) : (
           <>
-            <p className="mb-6 text-sm text-muted-foreground">{filtered.length} of {articles.length} essays</p>
+            <p className="mb-6 text-sm text-muted-foreground">
+              Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filtered.length)} of {filtered.length} essays
+            </p>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((a) => (
+              {paged.map((a) => (
                 <Link
                   key={a.id}
                   to="/writings/$slug"
@@ -142,6 +157,38 @@ function WritingsPage() {
                 </Link>
               ))}
             </div>
+
+            {totalPages > 1 && (
+              <nav className="mt-12 flex flex-wrap items-center justify-center gap-2" aria-label="Pagination">
+                <button
+                  onClick={() => goTo(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="rounded-full px-4 py-2 text-sm glass hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  ← Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                  .map((p, idx, arr) => (
+                    <span key={p} className="flex items-center gap-2">
+                      {idx > 0 && p - arr[idx - 1] > 1 && <span className="text-muted-foreground">…</span>}
+                      <button
+                        onClick={() => goTo(p)}
+                        className={`min-w-10 rounded-full px-3 py-2 text-sm transition ${p === currentPage ? "bg-primary text-primary-foreground" : "glass hover:bg-white/10"}`}
+                      >
+                        {p}
+                      </button>
+                    </span>
+                  ))}
+                <button
+                  onClick={() => goTo(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className="rounded-full px-4 py-2 text-sm glass hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Next →
+                </button>
+              </nav>
+            )}
           </>
         )}
       </section>
