@@ -6,6 +6,7 @@ export function SiteHeader() {
     { to: "/about", label: "About" },
     { to: "/scholarship", label: "Scholarship" },
     { to: "/writings", label: "Writings" },
+    { to: "/ask", label: "Ask AI" },
     { to: "/legacy", label: "Legacy" },
   ] as const;
 
