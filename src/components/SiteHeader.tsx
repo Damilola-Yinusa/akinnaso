@@ -9,6 +9,7 @@ export function SiteHeader() {
     { to: "/writings", label: "Writings" },
     { to: "/ask", label: "Ask AI" },
     { to: "/legacy", label: "Legacy" },
+    { to: "/tributes", label: "Tributes" },
   ] as const;
 
   return (

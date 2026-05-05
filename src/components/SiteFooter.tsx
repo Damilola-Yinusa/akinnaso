@@ -1,9 +1,13 @@
 import { Link } from "@tanstack/react-router";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 export function SiteFooter() {
   return (
     <footer className="border-t border-border/60 bg-background/60 py-12">
       <div className="mx-auto max-w-6xl px-6">
+        <div className="mb-12">
+          <NewsletterSignup />
+        </div>
         <div className="grid gap-10 md:grid-cols-3">
           <div>
             <h3 className="font-display text-xl">F. Niyi Akinnaso</h3>
@@ -20,6 +24,8 @@ export function SiteFooter() {
               <li><Link to="/about" className="hover:text-primary">Biography</Link></li>
               <li><Link to="/scholarship" className="hover:text-primary">Scholarship</Link></li>
               <li><Link to="/writings" className="hover:text-primary">Newspaper Columns</Link></li>
+              <li><Link to="/themes" className="hover:text-primary">Themes</Link></li>
+              <li><Link to="/tributes" className="hover:text-primary">Tributes</Link></li>
               <li><Link to="/legacy" className="hover:text-primary">Legacy & Service</Link></li>
             </ul>
           </div>

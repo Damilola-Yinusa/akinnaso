@@ -19,6 +19,7 @@ export type Database = {
           content: string | null
           created_at: string
           excerpt: string | null
+          featured: boolean
           hero_image: string | null
           html: string | null
           id: string
@@ -28,6 +29,7 @@ export type Database = {
           slug: string
           source: string
           source_url: string
+          summary: string | null
           tags: string[] | null
           theme: string | null
           theme_confidence: number | null
@@ -39,6 +41,7 @@ export type Database = {
           content?: string | null
           created_at?: string
           excerpt?: string | null
+          featured?: boolean
           hero_image?: string | null
           html?: string | null
           id?: string
@@ -48,6 +51,7 @@ export type Database = {
           slug: string
           source?: string
           source_url: string
+          summary?: string | null
           tags?: string[] | null
           theme?: string | null
           theme_confidence?: number | null
@@ -59,6 +63,7 @@ export type Database = {
           content?: string | null
           created_at?: string
           excerpt?: string | null
+          featured?: boolean
           hero_image?: string | null
           html?: string | null
           id?: string
@@ -68,12 +73,94 @@ export type Database = {
           slug?: string
           source?: string
           source_url?: string
+          summary?: string | null
           tags?: string[] | null
           theme?: string | null
           theme_confidence?: number | null
           title?: string
           updated_at?: string
           word_count?: number | null
+        }
+        Relationships: []
+      }
+      publications: {
+        Row: {
+          abstract: string | null
+          authors: string
+          citation_count: number | null
+          created_at: string
+          doi: string | null
+          featured: boolean
+          hero_image: string | null
+          id: string
+          sort_order: number
+          theme: string | null
+          title: string
+          updated_at: string
+          url: string | null
+          venue: string | null
+          year: number | null
+        }
+        Insert: {
+          abstract?: string | null
+          authors?: string
+          citation_count?: number | null
+          created_at?: string
+          doi?: string | null
+          featured?: boolean
+          hero_image?: string | null
+          id?: string
+          sort_order?: number
+          theme?: string | null
+          title: string
+          updated_at?: string
+          url?: string | null
+          venue?: string | null
+          year?: number | null
+        }
+        Update: {
+          abstract?: string | null
+          authors?: string
+          citation_count?: number | null
+          created_at?: string
+          doi?: string | null
+          featured?: boolean
+          hero_image?: string | null
+          id?: string
+          sort_order?: number
+          theme?: string | null
+          title?: string
+          updated_at?: string
+          url?: string | null
+          venue?: string | null
+          year?: number | null
+        }
+        Relationships: []
+      }
+      subscribers: {
+        Row: {
+          confirmed: boolean
+          created_at: string
+          email: string
+          id: string
+          name: string | null
+          unsubscribed_at: string | null
+        }
+        Insert: {
+          confirmed?: boolean
+          created_at?: string
+          email: string
+          id?: string
+          name?: string | null
+          unsubscribed_at?: string | null
+        }
+        Update: {
+          confirmed?: boolean
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string | null
+          unsubscribed_at?: string | null
         }
         Relationships: []
       }
@@ -110,11 +197,78 @@ export type Database = {
         }
         Relationships: []
       }
+      tributes: {
+        Row: {
+          approved_at: string | null
+          created_at: string
+          email: string | null
+          id: string
+          location: string | null
+          message: string
+          name: string
+          relationship: string | null
+          status: Database["public"]["Enums"]["tribute_status"]
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          location?: string | null
+          message: string
+          name: string
+          relationship?: string | null
+          status?: Database["public"]["Enums"]["tribute_status"]
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          location?: string | null
+          message?: string
+          name?: string
+          relationship?: string | null
+          status?: Database["public"]["Enums"]["tribute_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       search_articles: {
         Args: { max_results?: number; q: string }
         Returns: {
@@ -130,7 +284,8 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "family" | "user"
+      tribute_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -257,6 +412,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "family", "user"],
+      tribute_status: ["pending", "approved", "rejected"],
+    },
   },
 } as const
