@@ -5,7 +5,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 
-export const Route = createFileRoute("/writings")({
+export const Route = createFileRoute("/writings/")({
   head: () => ({
     meta: [
       { title: "Writings — F. Niyi Akinnaso" },
