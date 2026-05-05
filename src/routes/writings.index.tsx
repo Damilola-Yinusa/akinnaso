@@ -49,7 +49,7 @@ function WritingsPage() {
   useEffect(() => {
     supabase
       .from("articles")
-      .select("id, slug, title, excerpt, published_at, hero_image, source_url, word_count")
+      .select("id, slug, title, excerpt, published_at, hero_image, source_url, source, word_count")
       .order("published_at", { ascending: false, nullsFirst: false })
       .then(({ data }) => {
         setArticles((data as Article[]) || []);
