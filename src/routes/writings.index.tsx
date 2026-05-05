@@ -25,7 +25,16 @@ type Article = {
   published_at: string | null;
   hero_image: string | null;
   source_url: string;
+  source: string;
   word_count: number | null;
+};
+
+const SOURCE_LABEL: Record<string, string> = {
+  thenation: "The Nation",
+  punch: "The Punch",
+  premiumtimes: "Premium Times",
+  vanguard: "Vanguard",
+  sahara: "Sahara Reporters",
 };
 
 const PAGE_SIZE = 12;
