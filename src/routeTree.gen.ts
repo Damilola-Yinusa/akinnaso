@@ -42,9 +42,9 @@ const WritingsIndexRoute = WritingsIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const WritingsSlugRoute = WritingsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => WritingsRoute,
+  id: '/writings/$slug',
+  path: '/writings/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -104,6 +104,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   LegacyRoute: typeof LegacyRoute
   ScholarshipRoute: typeof ScholarshipRoute
+  WritingsSlugRoute: typeof WritingsSlugRoute
   WritingsIndexRoute: typeof WritingsIndexRoute
 }
 
@@ -146,10 +147,10 @@ declare module '@tanstack/react-router' {
     }
     '/writings/$slug': {
       id: '/writings/$slug'
-      path: '/$slug'
+      path: '/writings/$slug'
       fullPath: '/writings/$slug'
       preLoaderRoute: typeof WritingsSlugRouteImport
-      parentRoute: typeof WritingsRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -159,17 +160,9 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   LegacyRoute: LegacyRoute,
   ScholarshipRoute: ScholarshipRoute,
+  WritingsSlugRoute: WritingsSlugRoute,
   WritingsIndexRoute: WritingsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
