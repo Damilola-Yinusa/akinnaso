@@ -15,6 +15,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WritingsIndexRouteImport } from './routes/writings.index'
 import { Route as WritingsSlugRouteImport } from './routes/writings.$slug'
+import { Route as ApiPublicAskRouteImport } from './routes/api/public/ask'
 
 const ScholarshipRoute = ScholarshipRouteImport.update({
   id: '/scholarship',
@@ -46,6 +47,11 @@ const WritingsSlugRoute = WritingsSlugRouteImport.update({
   path: '/writings/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAskRoute = ApiPublicAskRouteImport.update({
+  id: '/api/public/ask',
+  path: '/api/public/ask',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/scholarship': typeof ScholarshipRoute
   '/writings/$slug': typeof WritingsSlugRoute
   '/writings/': typeof WritingsIndexRoute
+  '/api/public/ask': typeof ApiPublicAskRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/scholarship': typeof ScholarshipRoute
   '/writings/$slug': typeof WritingsSlugRoute
   '/writings': typeof WritingsIndexRoute
+  '/api/public/ask': typeof ApiPublicAskRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +79,7 @@ export interface FileRoutesById {
   '/scholarship': typeof ScholarshipRoute
   '/writings/$slug': typeof WritingsSlugRoute
   '/writings/': typeof WritingsIndexRoute
+  '/api/public/ask': typeof ApiPublicAskRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
     | '/scholarship'
     | '/writings/$slug'
     | '/writings/'
+    | '/api/public/ask'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,6 +99,7 @@ export interface FileRouteTypes {
     | '/scholarship'
     | '/writings/$slug'
     | '/writings'
+    | '/api/public/ask'
   id:
     | '__root__'
     | '/'
@@ -97,6 +108,7 @@ export interface FileRouteTypes {
     | '/scholarship'
     | '/writings/$slug'
     | '/writings/'
+    | '/api/public/ask'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -106,6 +118,7 @@ export interface RootRouteChildren {
   ScholarshipRoute: typeof ScholarshipRoute
   WritingsSlugRoute: typeof WritingsSlugRoute
   WritingsIndexRoute: typeof WritingsIndexRoute
+  ApiPublicAskRoute: typeof ApiPublicAskRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -152,6 +165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WritingsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/ask': {
+      id: '/api/public/ask'
+      path: '/api/public/ask'
+      fullPath: '/api/public/ask'
+      preLoaderRoute: typeof ApiPublicAskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -162,6 +182,7 @@ const rootRouteChildren: RootRouteChildren = {
   ScholarshipRoute: ScholarshipRoute,
   WritingsSlugRoute: WritingsSlugRoute,
   WritingsIndexRoute: WritingsIndexRoute,
+  ApiPublicAskRoute: ApiPublicAskRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
