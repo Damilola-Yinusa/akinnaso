@@ -14,6 +14,7 @@ import { Route as ScholarshipRouteImport } from './routes/scholarship'
 import { Route as LegacyRouteImport } from './routes/legacy'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WritingsSlugRouteImport } from './routes/writings.$slug'
 
 const WritingsRoute = WritingsRouteImport.update({
   id: '/writings',
@@ -40,20 +41,27 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WritingsSlugRoute = WritingsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => WritingsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
-  '/writings': typeof WritingsRoute
+  '/writings': typeof WritingsRouteWithChildren
+  '/writings/$slug': typeof WritingsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
-  '/writings': typeof WritingsRoute
+  '/writings': typeof WritingsRouteWithChildren
+  '/writings/$slug': typeof WritingsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -61,14 +69,34 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
-  '/writings': typeof WritingsRoute
+  '/writings': typeof WritingsRouteWithChildren
+  '/writings/$slug': typeof WritingsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/legacy' | '/scholarship' | '/writings'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/legacy'
+    | '/scholarship'
+    | '/writings'
+    | '/writings/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/legacy' | '/scholarship' | '/writings'
-  id: '__root__' | '/' | '/about' | '/legacy' | '/scholarship' | '/writings'
+  to:
+    | '/'
+    | '/about'
+    | '/legacy'
+    | '/scholarship'
+    | '/writings'
+    | '/writings/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/legacy'
+    | '/scholarship'
+    | '/writings'
+    | '/writings/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,7 +104,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   LegacyRoute: typeof LegacyRoute
   ScholarshipRoute: typeof ScholarshipRoute
-  WritingsRoute: typeof WritingsRoute
+  WritingsRoute: typeof WritingsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -116,25 +144,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/writings/$slug': {
+      id: '/writings/$slug'
+      path: '/$slug'
+      fullPath: '/writings/$slug'
+      preLoaderRoute: typeof WritingsSlugRouteImport
+      parentRoute: typeof WritingsRoute
+    }
   }
 }
+
+interface WritingsRouteChildren {
+  WritingsSlugRoute: typeof WritingsSlugRoute
+}
+
+const WritingsRouteChildren: WritingsRouteChildren = {
+  WritingsSlugRoute: WritingsSlugRoute,
+}
+
+const WritingsRouteWithChildren = WritingsRoute._addFileChildren(
+  WritingsRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   LegacyRoute: LegacyRoute,
   ScholarshipRoute: ScholarshipRoute,
-  WritingsRoute: WritingsRoute,
+  WritingsRoute: WritingsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
