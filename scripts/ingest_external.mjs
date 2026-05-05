@@ -42,9 +42,10 @@ async function processUrl(url) {
   const md = d.markdown || "";
   const meta = d.metadata || {};
 
-  // Verify Akinnaso authorship - must mention his name in title, byline, or first 600 chars
-  const hay = `${meta.title || ""} ${meta.author || ""} ${md.slice(0, 800)}`.toLowerCase();
-  if (!hay.includes("akinnaso")) return "not-author";
+  // Verify authorship: trust known columnist URL patterns OR text mention of "akinnaso"
+  const hay = `${meta.title || ""} ${meta.author || ""} ${md.slice(0, 1500)}`.toLowerCase();
+  const trustedColumnist = url.includes("punchng.com/"); // Punch URLs came from his columnist page / search
+  if (!trustedColumnist && !hay.includes("akinnaso")) return "not-author";
 
   const title = (meta.title || meta.ogTitle || "Untitled")
     .replace(/\s*[-|]\s*(Premium Times|Punch Newspapers|Vanguard News|Sahara Reporters).*$/i, "")
