@@ -28,11 +28,14 @@ type Article = {
   word_count: number | null;
 };
 
+const PAGE_SIZE = 12;
+
 function WritingsPage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [year, setYear] = useState<string>("all");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     supabase
@@ -44,6 +47,8 @@ function WritingsPage() {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => { setPage(1); }, [q, year]);
 
   const years = useMemo(() => {
     const ys = new Set<string>();
@@ -58,6 +63,14 @@ function WritingsPage() {
       return true;
     });
   }, [articles, q, year]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paged = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const goTo = (p: number) => {
+    setPage(p);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="min-h-screen bg-background">
