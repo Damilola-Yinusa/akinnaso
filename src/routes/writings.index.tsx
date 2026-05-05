@@ -151,7 +151,8 @@ function WritingsPage() {
                   )}
                   <div className="flex flex-1 flex-col p-6">
                     <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
-                      {a.published_at ? new Date(a.published_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "The Nation"}
+                      {a.published_at ? new Date(a.published_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : ""}
+                      {a.source && <span className="ml-2 text-primary/80">· {SOURCE_LABEL[a.source] || a.source}</span>}
                     </p>
                     <h2 className="mt-3 font-display text-xl leading-snug transition-colors group-hover:text-primary">
                       {a.title}
