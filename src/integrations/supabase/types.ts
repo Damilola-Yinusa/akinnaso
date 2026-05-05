@@ -14,13 +14,67 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      articles: {
+        Row: {
+          content: string | null
+          created_at: string
+          excerpt: string | null
+          hero_image: string | null
+          html: string | null
+          id: string
+          published_at: string | null
+          scraped_at: string
+          slug: string
+          source: string
+          source_url: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          word_count: number | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          excerpt?: string | null
+          hero_image?: string | null
+          html?: string | null
+          id?: string
+          published_at?: string | null
+          scraped_at?: string
+          slug: string
+          source?: string
+          source_url: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          word_count?: number | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          excerpt?: string | null
+          hero_image?: string | null
+          html?: string | null
+          id?: string
+          published_at?: string | null
+          scraped_at?: string
+          slug?: string
+          source?: string
+          source_url?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          word_count?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       [_ in never]: never
