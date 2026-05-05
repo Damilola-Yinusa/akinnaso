@@ -18,6 +18,8 @@ import { Route as WritingsIndexRouteImport } from './routes/writings.index'
 import { Route as ThemesIndexRouteImport } from './routes/themes.index'
 import { Route as WritingsSlugRouteImport } from './routes/writings.$slug'
 import { Route as ThemesSlugRouteImport } from './routes/themes.$slug'
+import { Route as ApiSitemapDotxmlRouteImport } from './routes/api/sitemap[.]xml'
+import { Route as ApiRobotsDottxtRouteImport } from './routes/api/robots[.]txt'
 import { Route as ApiPublicAskRouteImport } from './routes/api/public/ask'
 
 const ScholarshipRoute = ScholarshipRouteImport.update({
@@ -65,6 +67,16 @@ const ThemesSlugRoute = ThemesSlugRouteImport.update({
   path: '/themes/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSitemapDotxmlRoute = ApiSitemapDotxmlRouteImport.update({
+  id: '/api/sitemap.xml',
+  path: '/api/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRobotsDottxtRoute = ApiRobotsDottxtRouteImport.update({
+  id: '/api/robots.txt',
+  path: '/api/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAskRoute = ApiPublicAskRouteImport.update({
   id: '/api/public/ask',
   path: '/api/public/ask',
@@ -77,6 +89,8 @@ export interface FileRoutesByFullPath {
   '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
+  '/api/robots.txt': typeof ApiRobotsDottxtRoute
+  '/api/sitemap.xml': typeof ApiSitemapDotxmlRoute
   '/themes/$slug': typeof ThemesSlugRoute
   '/writings/$slug': typeof WritingsSlugRoute
   '/themes/': typeof ThemesIndexRoute
@@ -89,6 +103,8 @@ export interface FileRoutesByTo {
   '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
+  '/api/robots.txt': typeof ApiRobotsDottxtRoute
+  '/api/sitemap.xml': typeof ApiSitemapDotxmlRoute
   '/themes/$slug': typeof ThemesSlugRoute
   '/writings/$slug': typeof WritingsSlugRoute
   '/themes': typeof ThemesIndexRoute
@@ -102,6 +118,8 @@ export interface FileRoutesById {
   '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
+  '/api/robots.txt': typeof ApiRobotsDottxtRoute
+  '/api/sitemap.xml': typeof ApiSitemapDotxmlRoute
   '/themes/$slug': typeof ThemesSlugRoute
   '/writings/$slug': typeof WritingsSlugRoute
   '/themes/': typeof ThemesIndexRoute
@@ -116,6 +134,8 @@ export interface FileRouteTypes {
     | '/ask'
     | '/legacy'
     | '/scholarship'
+    | '/api/robots.txt'
+    | '/api/sitemap.xml'
     | '/themes/$slug'
     | '/writings/$slug'
     | '/themes/'
@@ -128,6 +148,8 @@ export interface FileRouteTypes {
     | '/ask'
     | '/legacy'
     | '/scholarship'
+    | '/api/robots.txt'
+    | '/api/sitemap.xml'
     | '/themes/$slug'
     | '/writings/$slug'
     | '/themes'
@@ -140,6 +162,8 @@ export interface FileRouteTypes {
     | '/ask'
     | '/legacy'
     | '/scholarship'
+    | '/api/robots.txt'
+    | '/api/sitemap.xml'
     | '/themes/$slug'
     | '/writings/$slug'
     | '/themes/'
@@ -153,6 +177,8 @@ export interface RootRouteChildren {
   AskRoute: typeof AskRoute
   LegacyRoute: typeof LegacyRoute
   ScholarshipRoute: typeof ScholarshipRoute
+  ApiRobotsDottxtRoute: typeof ApiRobotsDottxtRoute
+  ApiSitemapDotxmlRoute: typeof ApiSitemapDotxmlRoute
   ThemesSlugRoute: typeof ThemesSlugRoute
   WritingsSlugRoute: typeof WritingsSlugRoute
   ThemesIndexRoute: typeof ThemesIndexRoute
@@ -225,6 +251,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ThemesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/sitemap.xml': {
+      id: '/api/sitemap.xml'
+      path: '/api/sitemap.xml'
+      fullPath: '/api/sitemap.xml'
+      preLoaderRoute: typeof ApiSitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/robots.txt': {
+      id: '/api/robots.txt'
+      path: '/api/robots.txt'
+      fullPath: '/api/robots.txt'
+      preLoaderRoute: typeof ApiRobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/ask': {
       id: '/api/public/ask'
       path: '/api/public/ask'
@@ -241,6 +281,8 @@ const rootRouteChildren: RootRouteChildren = {
   AskRoute: AskRoute,
   LegacyRoute: LegacyRoute,
   ScholarshipRoute: ScholarshipRoute,
+  ApiRobotsDottxtRoute: ApiRobotsDottxtRoute,
+  ApiSitemapDotxmlRoute: ApiSitemapDotxmlRoute,
   ThemesSlugRoute: ThemesSlugRoute,
   WritingsSlugRoute: WritingsSlugRoute,
   ThemesIndexRoute: ThemesIndexRoute,
