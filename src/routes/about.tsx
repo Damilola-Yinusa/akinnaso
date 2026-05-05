@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { Timeline } from "@/components/Timeline";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -78,6 +79,10 @@ function AboutPage() {
           encounter it for years to come.
         </p>
       </article>
+
+      <div className="border-t border-white/5 bg-hero/40">
+        <Timeline />
+      </div>
 
       <SiteFooter />
     </div>
