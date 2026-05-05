@@ -9,18 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WritingsRouteImport } from './routes/writings'
 import { Route as ScholarshipRouteImport } from './routes/scholarship'
 import { Route as LegacyRouteImport } from './routes/legacy'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WritingsIndexRouteImport } from './routes/writings.index'
 import { Route as WritingsSlugRouteImport } from './routes/writings.$slug'
 
-const WritingsRoute = WritingsRouteImport.update({
-  id: '/writings',
-  path: '/writings',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ScholarshipRoute = ScholarshipRouteImport.update({
   id: '/scholarship',
   path: '/scholarship',
@@ -41,10 +36,15 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WritingsIndexRoute = WritingsIndexRouteImport.update({
+  id: '/writings/',
+  path: '/writings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WritingsSlugRoute = WritingsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => WritingsRoute,
+  id: '/writings/$slug',
+  path: '/writings/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -52,16 +52,16 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
-  '/writings': typeof WritingsRouteWithChildren
   '/writings/$slug': typeof WritingsSlugRoute
+  '/writings/': typeof WritingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
-  '/writings': typeof WritingsRouteWithChildren
   '/writings/$slug': typeof WritingsSlugRoute
+  '/writings': typeof WritingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,8 +69,8 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/legacy': typeof LegacyRoute
   '/scholarship': typeof ScholarshipRoute
-  '/writings': typeof WritingsRouteWithChildren
   '/writings/$slug': typeof WritingsSlugRoute
+  '/writings/': typeof WritingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -79,24 +79,24 @@ export interface FileRouteTypes {
     | '/about'
     | '/legacy'
     | '/scholarship'
-    | '/writings'
     | '/writings/$slug'
+    | '/writings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/legacy'
     | '/scholarship'
-    | '/writings'
     | '/writings/$slug'
+    | '/writings'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/legacy'
     | '/scholarship'
-    | '/writings'
     | '/writings/$slug'
+    | '/writings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -104,18 +104,12 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   LegacyRoute: typeof LegacyRoute
   ScholarshipRoute: typeof ScholarshipRoute
-  WritingsRoute: typeof WritingsRouteWithChildren
+  WritingsSlugRoute: typeof WritingsSlugRoute
+  WritingsIndexRoute: typeof WritingsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/writings': {
-      id: '/writings'
-      path: '/writings'
-      fullPath: '/writings'
-      preLoaderRoute: typeof WritingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/scholarship': {
       id: '/scholarship'
       path: '/scholarship'
@@ -144,34 +138,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/writings/': {
+      id: '/writings/'
+      path: '/writings'
+      fullPath: '/writings/'
+      preLoaderRoute: typeof WritingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/writings/$slug': {
       id: '/writings/$slug'
-      path: '/$slug'
+      path: '/writings/$slug'
       fullPath: '/writings/$slug'
       preLoaderRoute: typeof WritingsSlugRouteImport
-      parentRoute: typeof WritingsRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface WritingsRouteChildren {
-  WritingsSlugRoute: typeof WritingsSlugRoute
-}
-
-const WritingsRouteChildren: WritingsRouteChildren = {
-  WritingsSlugRoute: WritingsSlugRoute,
-}
-
-const WritingsRouteWithChildren = WritingsRoute._addFileChildren(
-  WritingsRouteChildren,
-)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   LegacyRoute: LegacyRoute,
   ScholarshipRoute: ScholarshipRoute,
-  WritingsRoute: WritingsRouteWithChildren,
+  WritingsSlugRoute: WritingsSlugRoute,
+  WritingsIndexRoute: WritingsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
