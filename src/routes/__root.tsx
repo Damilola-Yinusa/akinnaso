@@ -35,6 +35,7 @@ const personLd = JSON.stringify({
     "https://scholar.google.com/citations?user=LBwAuEUAAAAJ&hl=en",
     "https://thenationonlineng.net/author/niyi-akinnaso/",
   ],
+  image: "/hero-portrait.jpg",
   knowsAbout: [
     "Sociolinguistics",
     "Language Policy",
@@ -60,8 +61,8 @@ export const Route = createRootRoute({
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: "F. Niyi Akinnaso — Legacy Archive" },
       { name: "twitter:description", content: "The digital legacy of Professor F. Niyi Akinnaso — retired Professor of Anthropology and Linguistics, scholar, columnist and public intellectual." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e677a239-307b-479c-b3b4-89af961ed4d1" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e677a239-307b-479c-b3b4-89af961ed4d1" },
+      { property: "og:image", content: "/hero-portrait.jpg" },
+      { name: "twitter:image", content: "/hero-portrait.jpg" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

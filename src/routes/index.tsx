@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import heroPortrait from "@/assets/hero-portrait.jpg";
 import { articles, publications } from "@/data/articles";
+
+const heroPortrait = "/hero-portrait.jpg";
 
 export const Route = createFileRoute("/")({
   component: Index,
