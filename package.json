@@ -13,7 +13,17 @@
     "preview": "vite preview",
     "start": "node .output/server/index.mjs",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "ingest:scrape": "node scripts/scrape-to-cache.mjs",
+    "ingest:upload": "node scripts/upload-cache.mjs",
+    "ingest:discover-external": "node scripts/discover_external.mjs",
+    "ingest:nation": "node scripts/ingest.mjs",
+    "ingest:external": "node scripts/ingest_external.mjs",
+    "ingest:clean": "node scripts/clean.mjs",
+    "ingest:classify": "node scripts/classify_themes.mjs",
+    "ingest:seed-publications": "node scripts/seed-publications.mjs",
+    "restore:archive": "node scripts/restore-all.mjs",
+    "restore:archive:full": "node scripts/restore-all.mjs --external"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

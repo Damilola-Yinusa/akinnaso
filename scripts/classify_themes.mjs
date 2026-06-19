@@ -1,4 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
+import { requireEnv } from "./lib.mjs";
+
+requireEnv("SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY");
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false },

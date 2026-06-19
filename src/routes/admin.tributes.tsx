@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useCallback, useEffect, useState } from "react";
+import { adminAuthHeaders } from "@/lib/server-auth";
+import {
+  deleteAdminTribute,
+  listAdminTributes,
+  setAdminTributeStatus,
+} from "@/server/admin.functions";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/admin/tributes")({
@@ -21,25 +26,47 @@ type Tribute = {
 function AdminTributes() {
   const [tributes, setTributes] = useState<Tribute[]>([]);
   const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const load = async () => {
-    let q = supabase.from("tributes").select("*").order("created_at", { ascending: false });
-    if (filter !== "all") q = q.eq("status", filter);
-    const { data } = await q;
-    setTributes((data as Tribute[]) || []);
-  };
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const headers = await adminAuthHeaders();
+      const rows = await listAdminTributes({ data: { filter }, headers });
+      setTributes(rows as Tribute[]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not load tributes.");
+      setTributes([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [filter]);
 
-  useEffect(() => { load(); }, [filter]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const setStatus = async (id: string, status: Tribute["status"]) => {
-    await supabase.from("tributes").update({ status, approved_at: status === "approved" ? new Date().toISOString() : null }).eq("id", id);
-    load();
+    try {
+      const headers = await adminAuthHeaders();
+      await setAdminTributeStatus({ data: { id, status }, headers });
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not update tribute.");
+    }
   };
 
   const remove = async (id: string) => {
     if (!confirm("Delete this tribute?")) return;
-    await supabase.from("tributes").delete().eq("id", id);
-    load();
+    try {
+      const headers = await adminAuthHeaders();
+      await deleteAdminTribute({ data: { id }, headers });
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not delete tribute.");
+    }
   };
 
   return (
@@ -59,31 +86,59 @@ function AdminTributes() {
         </div>
       </div>
 
+      {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
+
       <ul className="mt-6 space-y-4">
-        {tributes.length === 0 && <p className="text-muted-foreground">No tributes.</p>}
+        {loading && <p className="text-muted-foreground">Loading…</p>}
+        {!loading && tributes.length === 0 && (
+          <p className="text-muted-foreground">No {filter === "all" ? "" : `${filter} `}tributes yet.</p>
+        )}
         {tributes.map((t) => (
           <li key={t.id} className="glass rounded-2xl p-6">
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <div>
-                <p className="font-display text-lg">{t.name}{t.relationship && <span className="ml-2 text-sm text-muted-foreground">· {t.relationship}</span>}</p>
+                <p className="font-display text-lg">
+                  {t.name}
+                  {t.relationship && <span className="ml-2 text-sm text-muted-foreground">· {t.relationship}</span>}
+                </p>
                 <p className="text-xs text-muted-foreground">
                   {new Date(t.created_at).toLocaleString()}
                   {t.email && <span> · {t.email}</span>}
                   {t.location && <span> · {t.location}</span>}
                 </p>
               </div>
-              <span className={`rounded-full px-2.5 py-0.5 text-xs uppercase tracking-[0.2em] ${
-                t.status === "approved" ? "bg-emerald-500/20 text-emerald-300" :
-                t.status === "rejected" ? "bg-destructive/20 text-destructive" :
-                "bg-amber-500/20 text-amber-300"
-              }`}>{t.status}</span>
+              <span
+                className={`rounded-full px-2.5 py-0.5 text-xs uppercase tracking-[0.2em] ${
+                  t.status === "approved"
+                    ? "bg-emerald-500/20 text-emerald-300"
+                    : t.status === "rejected"
+                      ? "bg-destructive/20 text-destructive"
+                      : "bg-amber-500/20 text-amber-300"
+                }`}
+              >
+                {t.status}
+              </span>
             </div>
             <p className="mt-4 whitespace-pre-line text-sm text-foreground/90">{t.message}</p>
             <div className="mt-4 flex flex-wrap gap-2">
-              {t.status !== "approved" && <Button size="sm" onClick={() => setStatus(t.id, "approved")}>Approve</Button>}
-              {t.status !== "rejected" && <Button size="sm" variant="outline" onClick={() => setStatus(t.id, "rejected")}>Reject</Button>}
-              {t.status !== "pending" && <Button size="sm" variant="outline" onClick={() => setStatus(t.id, "pending")}>Re-queue</Button>}
-              <Button size="sm" variant="outline" onClick={() => remove(t.id)}>Delete</Button>
+              {t.status !== "approved" && (
+                <Button size="sm" onClick={() => setStatus(t.id, "approved")}>
+                  Approve
+                </Button>
+              )}
+              {t.status !== "rejected" && (
+                <Button size="sm" variant="outline" onClick={() => setStatus(t.id, "rejected")}>
+                  Reject
+                </Button>
+              )}
+              {t.status !== "pending" && (
+                <Button size="sm" variant="outline" onClick={() => setStatus(t.id, "pending")}>
+                  Re-queue
+                </Button>
+              )}
+              <Button size="sm" variant="outline" onClick={() => remove(t.id)}>
+                Delete
+              </Button>
             </div>
           </li>
         ))}

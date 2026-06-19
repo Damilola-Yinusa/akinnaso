@@ -1,18 +1,18 @@
-// Ingest Akinnaso essays from external outlets (Premium Times, Punch, Vanguard, Sahara Reporters)
 import { createClient } from "@supabase/supabase-js";
-import fs from "fs";
+import { existsSync, readFileSync } from "fs";
+import { firecrawl, requireEnv, slugify, readCache } from "./lib.mjs";
 
-const FC = process.env.FIRECRAWL_API_KEY;
+requireEnv("SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "FIRECRAWL_API_KEY");
+
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false },
 });
 
-const urls = JSON.parse(fs.readFileSync("/tmp/external_urls.json", "utf8"));
-console.log("Candidate URLs:", urls.length);
-
-function slugify(s) {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 140);
+const urls = readCache("external_urls.json");
+if (!urls?.length) {
+  throw new Error("No external URLs found. Run: npm run ingest:discover-external");
 }
+console.log("Candidate URLs:", urls.length);
 
 function sourceFor(url) {
   if (url.includes("premiumtimesng.com")) return "premiumtimes";
@@ -22,29 +22,17 @@ function sourceFor(url) {
   return "external";
 }
 
-async function fc(path, body) {
-  const r = await fetch(`https://api.firecrawl.dev/v2/${path}`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${FC}`, "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!r.ok) throw new Error(`FC ${r.status}: ${await r.text()}`);
-  return r.json();
-}
-
 async function processUrl(url) {
-  const { data: existing } = await supabase
-    .from("articles").select("id").eq("source_url", url).maybeSingle();
+  const { data: existing } = await supabase.from("articles").select("id").eq("source_url", url).maybeSingle();
   if (existing) return "skip";
 
-  const res = await fc("scrape", { url, formats: ["markdown"], onlyMainContent: true });
+  const res = await firecrawl("scrape", { url, formats: ["markdown"], onlyMainContent: true });
   const d = res.data || res;
   const md = d.markdown || "";
   const meta = d.metadata || {};
 
-  // Verify authorship: trust known columnist URL patterns OR text mention of "akinnaso"
   const hay = `${meta.title || ""} ${meta.author || ""} ${md.slice(0, 1500)}`.toLowerCase();
-  const trustedColumnist = url.includes("punchng.com/"); // Punch URLs came from his columnist page / search
+  const trustedColumnist = url.includes("punchng.com/");
   if (!trustedColumnist && !hay.includes("akinnaso")) return "not-author";
 
   const title = (meta.title || meta.ogTitle || "Untitled")
@@ -52,14 +40,13 @@ async function processUrl(url) {
     .replace(/\s*[-|]\s*The Nation.*$/i, "")
     .trim();
 
-  // build slug from URL path tail
   const m = url.replace(/\/$/, "").match(/\/([a-z0-9-]+)$/i);
   const slug = (m ? m[1] : slugify(title)).toLowerCase();
 
-  const published =
-    meta.publishedTime || meta["article:published_time"] || meta.datePublished || null;
+  const published = meta.publishedTime || meta["article:published_time"] || meta.datePublished || null;
   const excerpt = (meta.description || meta.ogDescription || md.slice(0, 280).replace(/\s+/g, " "))
-    .trim().slice(0, 320);
+    .trim()
+    .slice(0, 320);
   const heroImage = meta.ogImage || meta.image || null;
   const wordCount = md.split(/\s+/).filter(Boolean).length;
 
@@ -80,7 +67,11 @@ async function processUrl(url) {
   return "ok";
 }
 
-let ok = 0, skip = 0, fail = 0, notAuthor = 0, done = 0;
+let ok = 0,
+  skip = 0,
+  fail = 0,
+  notAuthor = 0,
+  done = 0;
 const CONCURRENCY = 4;
 async function worker(q) {
   while (q.length) {

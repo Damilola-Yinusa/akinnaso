@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { subscribeNewsletter } from "@/server/forms.functions";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -17,25 +17,22 @@ export function NewsletterSignup() {
       return;
     }
     setState("loading");
-    const { error } = await supabase.from("subscribers").insert({
-      email: email.trim().toLowerCase(),
-      name: name.trim() || null,
-      confirmed: false,
-    });
-    if (error) {
-      if (error.code === "23505") {
-        setState("ok");
-        setMsg("You're already on the list. Thank you.");
-      } else {
-        setState("err");
-        setMsg(error.message);
-      }
-      return;
+    try {
+      const result = await subscribeNewsletter({
+        data: { email: email.trim(), name: name.trim() },
+      });
+      setState("ok");
+      setMsg(
+        result.alreadySubscribed
+          ? "You're already on the list. Thank you."
+          : "Thank you. You'll hear from us when new pieces are added.",
+      );
+      setEmail("");
+      setName("");
+    } catch (err) {
+      setState("err");
+      setMsg(err instanceof Error ? err.message : "Could not subscribe.");
     }
-    setState("ok");
-    setMsg("Thank you. You'll hear from us when new pieces are added.");
-    setEmail("");
-    setName("");
   };
 
   return (

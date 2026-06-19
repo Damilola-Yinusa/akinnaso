@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { supabase } from "@/integrations/supabase/client";
+import { submitTribute } from "@/server/forms.functions";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,7 @@ function TributesPage() {
     const { data } = await supabase
       .from("tributes")
       .select("id, name, relationship, location, message, created_at")
+      .eq("status", "approved")
       .order("created_at", { ascending: false });
     setTributes((data as Tribute[]) || []);
     setLoading(false);
@@ -64,22 +66,15 @@ function TributesPage() {
       return;
     }
     setState("loading");
-    const { error } = await supabase.from("tributes").insert({
-      name: parsed.data.name,
-      email: parsed.data.email || null,
-      relationship: parsed.data.relationship || null,
-      location: parsed.data.location || null,
-      message: parsed.data.message,
-      status: "pending",
-    });
-    if (error) {
+    try {
+      await submitTribute({ data: parsed.data });
+      setState("ok");
+      setMsg("Thank you. Your tribute will appear here once approved.");
+      setForm({ name: "", email: "", relationship: "", location: "", message: "" });
+    } catch (err) {
       setState("err");
-      setMsg(error.message);
-      return;
+      setMsg(err instanceof Error ? err.message : "Could not submit tribute.");
     }
-    setState("ok");
-    setMsg("Thank you. Your tribute will appear here once approved.");
-    setForm({ name: "", email: "", relationship: "", location: "", message: "" });
   };
 
   return (
