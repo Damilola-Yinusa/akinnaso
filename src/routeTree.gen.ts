@@ -13,7 +13,6 @@ import { Route as TributesRouteImport } from './routes/tributes'
 import { Route as ScholarshipRouteImport } from './routes/scholarship'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LegacyRouteImport } from './routes/legacy'
-import { Route as AskRouteImport } from './routes/ask'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -28,7 +27,6 @@ import { Route as AdminTributesRouteImport } from './routes/admin.tributes'
 import { Route as AdminSubscribersRouteImport } from './routes/admin.subscribers'
 import { Route as AdminPublicationsRouteImport } from './routes/admin.publications'
 import { Route as AdminArticlesRouteImport } from './routes/admin.articles'
-import { Route as ApiPublicAskRouteImport } from './routes/api/public/ask'
 
 const TributesRoute = TributesRouteImport.update({
   id: '/tributes',
@@ -48,11 +46,6 @@ const LoginRoute = LoginRouteImport.update({
 const LegacyRoute = LegacyRouteImport.update({
   id: '/legacy',
   path: '/legacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AskRoute = AskRouteImport.update({
-  id: '/ask',
-  path: '/ask',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -125,17 +118,11 @@ const AdminArticlesRoute = AdminArticlesRouteImport.update({
   path: '/articles',
   getParentRoute: () => AdminRoute,
 } as any)
-const ApiPublicAskRoute = ApiPublicAskRouteImport.update({
-  id: '/api/public/ask',
-  path: '/api/public/ask',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
-  '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/login': typeof LoginRoute
   '/scholarship': typeof ScholarshipRoute
@@ -151,12 +138,10 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/themes/': typeof ThemesIndexRoute
   '/writings/': typeof WritingsIndexRoute
-  '/api/public/ask': typeof ApiPublicAskRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/login': typeof LoginRoute
   '/scholarship': typeof ScholarshipRoute
@@ -172,14 +157,12 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/themes': typeof ThemesIndexRoute
   '/writings': typeof WritingsIndexRoute
-  '/api/public/ask': typeof ApiPublicAskRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
-  '/ask': typeof AskRoute
   '/legacy': typeof LegacyRoute
   '/login': typeof LoginRoute
   '/scholarship': typeof ScholarshipRoute
@@ -195,7 +178,6 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/themes/': typeof ThemesIndexRoute
   '/writings/': typeof WritingsIndexRoute
-  '/api/public/ask': typeof ApiPublicAskRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -203,7 +185,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
-    | '/ask'
     | '/legacy'
     | '/login'
     | '/scholarship'
@@ -219,12 +200,10 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/themes/'
     | '/writings/'
-    | '/api/public/ask'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/ask'
     | '/legacy'
     | '/login'
     | '/scholarship'
@@ -240,13 +219,11 @@ export interface FileRouteTypes {
     | '/admin'
     | '/themes'
     | '/writings'
-    | '/api/public/ask'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/admin'
-    | '/ask'
     | '/legacy'
     | '/login'
     | '/scholarship'
@@ -262,14 +239,12 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/themes/'
     | '/writings/'
-    | '/api/public/ask'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRouteWithChildren
-  AskRoute: typeof AskRoute
   LegacyRoute: typeof LegacyRoute
   LoginRoute: typeof LoginRoute
   ScholarshipRoute: typeof ScholarshipRoute
@@ -280,7 +255,6 @@ export interface RootRouteChildren {
   WritingsSlugRoute: typeof WritingsSlugRoute
   ThemesIndexRoute: typeof ThemesIndexRoute
   WritingsIndexRoute: typeof WritingsIndexRoute
-  ApiPublicAskRoute: typeof ApiPublicAskRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -311,13 +285,6 @@ declare module '@tanstack/react-router' {
       path: '/legacy'
       fullPath: '/legacy'
       preLoaderRoute: typeof LegacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ask': {
-      id: '/ask'
-      path: '/ask'
-      fullPath: '/ask'
-      preLoaderRoute: typeof AskRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -418,13 +385,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminArticlesRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/api/public/ask': {
-      id: '/api/public/ask'
-      path: '/api/public/ask'
-      fullPath: '/api/public/ask'
-      preLoaderRoute: typeof ApiPublicAskRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -450,7 +410,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRouteWithChildren,
-  AskRoute: AskRoute,
   LegacyRoute: LegacyRoute,
   LoginRoute: LoginRoute,
   ScholarshipRoute: ScholarshipRoute,
@@ -461,7 +420,6 @@ const rootRouteChildren: RootRouteChildren = {
   WritingsSlugRoute: WritingsSlugRoute,
   ThemesIndexRoute: ThemesIndexRoute,
   WritingsIndexRoute: WritingsIndexRoute,
-  ApiPublicAskRoute: ApiPublicAskRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

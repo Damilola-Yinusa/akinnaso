@@ -60,7 +60,7 @@ const ERAS: TimelineEra[] = [
       { year: "2012", title: "Begins weekly column in The Nation", detail: "Brings the discipline of an anthropologist to the Nigerian op-ed page. Restructuring, education, language and leadership become recurring threads.", tag: "public" },
       { year: "2015–2023", title: "Election-cycle commentary", detail: "Becomes one of the steadiest analytic voices through three presidential cycles — measured, comparative, impatient with bad faith.", tag: "public" },
       { year: "2018–", title: "Cross-paper presence", detail: "Pieces also appear in The Punch, Premium Times, Vanguard and Sahara Reporters, broadening the audience for the same long argument.", tag: "public" },
-      { year: "2026", title: "199 essays archived", detail: "This site brings together the full corpus of his public writing — searchable, themed, and now in conversation with itself through Ask AI.", tag: "life" },
+      { year: "2026", title: "199 essays archived", detail: "This site brings together the full corpus of his public writing — searchable, themed, and freely accessible.", tag: "life" },
     ],
   },
 ];

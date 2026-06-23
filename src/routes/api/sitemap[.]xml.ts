@@ -7,7 +7,7 @@ export const Route = createFileRoute("/api/sitemap.xml")({
       GET: async ({ request }) => {
         const url = new URL(request.url);
         const origin = `${url.protocol}//${url.host}`;
-        const staticPaths = ["/", "/about", "/scholarship", "/writings", "/themes", "/ask", "/legacy", "/tributes"];
+        const staticPaths = ["/", "/about", "/scholarship", "/writings", "/themes", "/legacy", "/tributes"];
 
         const { data: arts } = await supabaseAdmin
           .from("articles")

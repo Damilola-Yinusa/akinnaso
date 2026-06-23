@@ -23,13 +23,7 @@ const navItems: NavItem[] = [
       { to: "/writings", label: "Writings" },
     ],
   },
-  {
-    label: "Engage",
-    children: [
-      { to: "/ask", label: "Ask AI" },
-      { to: "/tributes", label: "Tributes" },
-    ],
-  },
+  { to: "/tributes", label: "Tributes" },
 ];
 
 function DesktopDropdown({ label, children }: { label: string; children: { to: string; label: string }[] }) {
