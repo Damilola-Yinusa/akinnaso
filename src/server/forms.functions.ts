@@ -2,13 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
+import { requireSupabasePublicEnv } from "@/lib/supabase-env";
 
 function publicSupabase() {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) {
-    throw new Error("Missing Supabase environment variables.");
-  }
+  const { url, key } = requireSupabasePublicEnv();
   return createClient<Database>(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
