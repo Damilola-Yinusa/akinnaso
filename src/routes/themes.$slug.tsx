@@ -1,10 +1,14 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { supabase } from "@/integrations/supabase/client";
+import { getPublicThemeArticles } from "@/server/articles.functions";
 
 export const Route = createFileRoute("/themes/$slug")({
+  loader: async ({ params }) => {
+    const { theme, articles } = await getPublicThemeArticles({ data: params.slug });
+    if (!theme) throw notFound();
+    return { theme, articles };
+  },
   head: ({ params }) => ({
     meta: [
       { title: `Theme: ${params.slug} — F. Niyi Akinnaso` },
@@ -31,24 +35,6 @@ export const Route = createFileRoute("/themes/$slug")({
   ),
 });
 
-type Theme = {
-  id: string;
-  slug: string;
-  title: string;
-  blurb: string;
-  narrative: string;
-};
-
-type Article = {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string | null;
-  published_at: string | null;
-  hero_image: string | null;
-  source: string;
-};
-
 const SOURCE_LABEL: Record<string, string> = {
   thenation: "The Nation",
   punch: "The Punch",
@@ -58,39 +44,7 @@ const SOURCE_LABEL: Record<string, string> = {
 };
 
 function ThemePage() {
-  const { slug } = Route.useParams();
-  const [theme, setTheme] = useState<Theme | null>(null);
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [missing, setMissing] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      const { data: t } = await supabase
-        .from("themes")
-        .select("*")
-        .eq("slug", slug)
-        .maybeSingle();
-      if (!t) {
-        setMissing(true);
-        setLoading(false);
-        return;
-      }
-      const { data: a } = await supabase
-        .from("articles")
-        .select("id, slug, title, excerpt, published_at, hero_image, source")
-        .eq("theme", slug)
-        .order("published_at", { ascending: false, nullsFirst: false });
-      setTheme(t as Theme);
-      setArticles((a as Article[]) || []);
-      setLoading(false);
-    })();
-  }, [slug]);
-
-  if (missing) {
-    throw notFound();
-  }
+  const { theme, articles } = Route.useLoaderData();
 
   return (
     <div className="min-h-screen bg-background">
@@ -118,9 +72,7 @@ function ThemePage() {
       </section>
 
       <section className="mx-auto max-w-4xl px-6 py-16">
-        {loading ? (
-          <p className="text-center text-muted-foreground">Loading…</p>
-        ) : articles.length === 0 ? (
+        {articles.length === 0 ? (
           <p className="text-center text-muted-foreground">No essays in this theme yet.</p>
         ) : (
           <ul className="divide-y divide-white/5">

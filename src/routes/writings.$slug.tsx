@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { supabase } from "@/integrations/supabase/client";
+import { getPublicArticleBySlug } from "@/server/articles.functions";
 
 const SOURCE_LABEL: Record<string, string> = {
   thenation: "The Nation",
@@ -36,14 +36,9 @@ function cleanContent(raw: string) {
 
 export const Route = createFileRoute("/writings/$slug")({
   loader: async ({ params }) => {
-    const { data, error } = await supabase
-      .from("articles")
-      .select("id, slug, title, content, excerpt, summary, published_at, hero_image, source, source_url, word_count, theme")
-      .eq("slug", params.slug)
-      .maybeSingle();
-    if (error) throw error;
-    if (!data) throw notFound();
-    return { article: data };
+    const article = await getPublicArticleBySlug({ data: params.slug });
+    if (!article) throw notFound();
+    return { article };
   },
   head: ({ loaderData }) => {
     if (!loaderData?.article) return { meta: [{ title: "Essay — F. Niyi Akinnaso" }] };

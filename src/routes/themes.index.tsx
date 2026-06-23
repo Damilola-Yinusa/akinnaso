@@ -1,10 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { supabase } from "@/integrations/supabase/client";
+import { listPublicArticles, listPublicThemes } from "@/server/articles.functions";
 
 export const Route = createFileRoute("/themes/")({
+  loader: async () => {
+    const [themes, articles] = await Promise.all([listPublicThemes(), listPublicArticles()]);
+    const grouped: Record<string, typeof articles> = {};
+    const counts: Record<string, number> = {};
+    for (const art of articles) {
+      const k = art.theme || "other";
+      (grouped[k] ||= []).push(art);
+      counts[k] = (counts[k] || 0) + 1;
+    }
+    return { themes, byTheme: grouped, counts };
+  },
   head: () => ({
     meta: [
       { title: "Themes — F. Niyi Akinnaso" },
@@ -25,43 +35,8 @@ type Theme = {
   sort_order: number;
 };
 
-type Article = {
-  id: string;
-  slug: string;
-  title: string;
-  published_at: string | null;
-  theme: string | null;
-};
-
 function ThemesPage() {
-  const [themes, setThemes] = useState<Theme[]>([]);
-  const [byTheme, setByTheme] = useState<Record<string, Article[]>>({});
-  const [counts, setCounts] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      const [{ data: t }, { data: a }] = await Promise.all([
-        supabase.from("themes").select("*").order("sort_order"),
-        supabase
-          .from("articles")
-          .select("id, slug, title, published_at, theme")
-          .order("published_at", { ascending: false, nullsFirst: false }),
-      ]);
-      const arts = (a as Article[]) || [];
-      const grouped: Record<string, Article[]> = {};
-      const c: Record<string, number> = {};
-      for (const art of arts) {
-        const k = art.theme || "other";
-        (grouped[k] ||= []).push(art);
-        c[k] = (c[k] || 0) + 1;
-      }
-      setThemes((t as Theme[]) || []);
-      setByTheme(grouped);
-      setCounts(c);
-      setLoading(false);
-    })();
-  }, []);
+  const { themes, byTheme, counts } = Route.useLoaderData();
 
   return (
     <div className="min-h-screen bg-background">
@@ -83,10 +58,7 @@ function ThemesPage() {
       </section>
 
       <section className="mx-auto max-w-4xl px-6 py-16">
-        {loading ? (
-          <p className="text-center text-muted-foreground">Loading…</p>
-        ) : (
-          <div className="space-y-20">
+        <div className="space-y-20">
             {themes
               .filter((t) => (counts[t.slug] || 0) > 0)
               .map((theme, i) => {
@@ -148,8 +120,7 @@ function ThemesPage() {
                   </article>
                 );
               })}
-          </div>
-        )}
+        </div>
       </section>
 
       <SiteFooter />

@@ -2,10 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { supabase } from "@/integrations/supabase/client";
+import { listPublicArticles } from "@/server/articles.functions";
 import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/writings/")({
+  loader: async () => ({
+    articles: await listPublicArticles(),
+  }),
   head: () => ({
     meta: [
       { title: "Writings — F. Niyi Akinnaso" },
@@ -16,18 +19,6 @@ export const Route = createFileRoute("/writings/")({
   }),
   component: WritingsPage,
 });
-
-type Article = {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string | null;
-  published_at: string | null;
-  hero_image: string | null;
-  source_url: string;
-  source: string;
-  word_count: number | null;
-};
 
 const SOURCE_LABEL: Record<string, string> = {
   thenation: "The Nation",
@@ -40,22 +31,10 @@ const SOURCE_LABEL: Record<string, string> = {
 const PAGE_SIZE = 12;
 
 function WritingsPage() {
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { articles } = Route.useLoaderData();
   const [q, setQ] = useState("");
   const [year, setYear] = useState<string>("all");
   const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    supabase
-      .from("articles")
-      .select("id, slug, title, excerpt, published_at, hero_image, source_url, source, word_count")
-      .order("published_at", { ascending: false, nullsFirst: false })
-      .then(({ data }) => {
-        setArticles((data as Article[]) || []);
-        setLoading(false);
-      });
-  }, []);
 
   useEffect(() => { setPage(1); }, [q, year]);
 
@@ -93,9 +72,7 @@ function WritingsPage() {
           </h1>
           <p className="mt-6 max-w-2xl text-muted-foreground">
             Every column Professor Akinnaso has published in <em>The Nation</em> — preserved, searchable, and freely accessible.
-            {!loading && (
-              <span className="ml-1 text-foreground">{articles.length} essays in the archive.</span>
-            )}
+            <span className="ml-1 text-foreground">{articles.length} essays in the archive.</span>
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -127,8 +104,8 @@ function WritingsPage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-16">
-        {loading ? (
-          <p className="text-center text-muted-foreground">Loading archive…</p>
+        {articles.length === 0 ? (
+          <p className="text-center text-muted-foreground">No essays in the archive yet.</p>
         ) : filtered.length === 0 ? (
           <p className="text-center text-muted-foreground">No essays match your search.</p>
         ) : (
